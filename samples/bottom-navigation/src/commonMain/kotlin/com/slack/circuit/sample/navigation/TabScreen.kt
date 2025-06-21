@@ -5,14 +5,18 @@ package com.slack.circuit.sample.navigation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -67,6 +71,7 @@ object TabScreenCircuit {
 
   sealed interface Event : CircuitUiEvent {
     data object Next : Event
+    data object Screen2Reset: Event
   }
 }
 
@@ -77,6 +82,9 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
     return TabScreenCircuit.State(label = screen.label) { event ->
       when (event) {
         TabScreenCircuit.Event.Next -> navigator.goTo(screen.next())
+        TabScreenCircuit.Event.Screen2Reset -> {
+          navigator.resetRoot(TabScreen.screen2, saveState = true, restoreState = false)
+        }
       }
     }
   }
@@ -101,15 +109,26 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
 fun TabUI(state: TabScreenCircuit.State, modifier: Modifier = Modifier) {
   val backStack = LocalBackStack.current?.toImmutableList() ?: persistentListOf()
   Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-    Text(
-      text = state.label,
-      style = MaterialTheme.typography.headlineMedium,
-      modifier =
-        Modifier.testTag(ContentTags.TAG_LABEL)
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp)
-          .padding(top = 24.dp, bottom = 8.dp),
-    )
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Text(
+        text = state.label,
+        style = MaterialTheme.typography.headlineMedium,
+        modifier =
+          Modifier.testTag(ContentTags.TAG_LABEL)
+            .weight(1f)
+            .padding(horizontal = 16.dp)
+            .padding(top = 24.dp, bottom = 8.dp),
+      )
+      Surface(
+        onClick = {
+          state.eventSink(TabScreenCircuit.Event.Screen2Reset)
+        },
+      ) {
+        Text("Reset")
+      }
+    }
     LazyColumn(
       modifier =
         Modifier.fillMaxSize().testTag(ContentTags.TAG_CONTENT).clickable {
