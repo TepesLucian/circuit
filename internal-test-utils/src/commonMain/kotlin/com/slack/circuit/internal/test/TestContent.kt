@@ -74,6 +74,21 @@ sealed class TestScreen(val label: String) : Screen {
   @Parcelize data object RootBeta : TestScreen("Root Beta")
 }
 
+sealed class TestScreenTabs(val label: String) : Screen {
+  @Parcelize data object Launch : TestScreenTabs("Launch")
+
+  @Parcelize data object Tab1 : TestScreenTabs("Tab1")
+
+  @Parcelize data object Tab2 : TestScreenTabs("Tab2")
+
+  @Parcelize data object Tab3 : TestScreenTabs("Tab3")
+
+  @Parcelize data object Tab4 : TestScreenTabs("Tab4")
+
+  @Parcelize data class IntScreen(val value: Int) : TestScreenTabs("IntScreen$value")
+
+}
+
 sealed class TestPopResult : PopResult {
 
   @Parcelize data object PopResultA : TestPopResult()
