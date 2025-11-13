@@ -65,37 +65,41 @@ class GestureNavigationCrashTest2 {
         }
       }
 
-      // current alpha at startup
-      onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Launch")
+        // current alpha at startup
+        onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Launch")
+        navigator.resetRoot(TestScreenTabs.Tab1, saveState = false, restoreState = false)
+        onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Tab1")
+        navigator.resetRoot(TestScreenTabs.Tab4, saveState = true, restoreState = true)
+        onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Tab4")
+        navigator.resetRoot(TestScreenTabs.Tab2, saveState = true, restoreState = true)
+        onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Tab2")
 
-      navigator.resetRoot(TestScreenTabs.Tab1, saveState = false, restoreState = false)
-      onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Tab1")
-      navigator.resetRoot(TestScreenTabs.Tab4, saveState = true, restoreState = true)
-      onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Tab4")
-      navigator.resetRoot(TestScreenTabs.Tab2, saveState = true, restoreState = true)
-      onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Tab2")
+        navigator.goTo(TestScreenTabs.IntScreen(1))
+        onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("IntScreen1")
+        navigator.goTo(TestScreenTabs.IntScreen(2))
+        onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("IntScreen2")
+        navigator.goTo(TestScreenTabs.IntScreen(3))
+        onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("IntScreen3")
+        activityRule.scenario.performGestureNavigationBackSwipe()
+        onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("IntScreen2")
 
-      navigator.goTo(TestScreenTabs.IntScreen(1))
-      onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("IntScreen1")
-      navigator.goTo(TestScreenTabs.IntScreen(2))
-      onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("IntScreen2")
-      activityRule.scenario.performGestureNavigationBackSwipe()
-      onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("IntScreen1")
-      navigator.goTo(TestScreenTabs.IntScreen(2))
-      onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("IntScreen2")
-      navigator.goTo(TestScreenTabs.IntScreen(3))
-      onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("IntScreen3")
+        navigator.goTo(TestScreenTabs.IntScreen(3))
+        onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("IntScreen3")
+        navigator.goTo(TestScreenTabs.IntScreen(4))
+        onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("IntScreen4")
 
-      navigator.resetRoot(TestScreenTabs.Tab3, saveState = true, restoreState = false)
-      onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Tab3")
+        navigator.resetRoot(TestScreenTabs.Tab3, saveState = true, restoreState = false)
+        onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Tab3")
 
-      navigator.resetRoot(TestScreenTabs.Tab2, saveState = true, restoreState = true)
-      onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("IntScreen3")
-      activityRule.scenario.performGestureNavigationBackSwipe()
-      activityRule.scenario.performGestureNavigationBackSwipe()
-      onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("IntScreen1")
-      activityRule.scenario.performGestureNavigationBackSwipe()
-      onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Tab2")
+        navigator.resetRoot(TestScreenTabs.Tab2, saveState = true, restoreState = true)
+        onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("IntScreen4")
+        activityRule.scenario.performGestureNavigationBackSwipe()
+        activityRule.scenario.performGestureNavigationBackSwipe() // this crashes on device
+        onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("IntScreen2")
+        activityRule.scenario.performGestureNavigationBackSwipe()
+        onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("IntScreen1")
+        activityRule.scenario.performGestureNavigationBackSwipe()
+        onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Tab2")
     }
   }
 }
