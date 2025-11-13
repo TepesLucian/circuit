@@ -22,6 +22,7 @@ import com.slack.circuit.internal.test.TestScreenTabs
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.resetRoot
 import com.slack.circuit.runtime.ui.ui
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
