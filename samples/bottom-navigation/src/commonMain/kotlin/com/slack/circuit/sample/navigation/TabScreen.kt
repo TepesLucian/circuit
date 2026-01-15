@@ -13,12 +13,16 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.foundation.DelicateCircuitFoundationApi
 import com.slack.circuit.foundation.LocalBackStack
 import com.slack.circuit.internal.runtime.Parcelize
+import com.slack.circuit.retained.produceAndCollectAsRetainedState
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -27,6 +31,9 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
+import kotlin.random.Random
 import kotlin.reflect.KClass
 
 @Parcelize
@@ -72,7 +79,20 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
   Presenter<TabScreenCircuit.State> {
   @Composable
   override fun present(): TabScreenCircuit.State {
-    return TabScreenCircuit.State(label = screen.label) { event ->
+      val value by produceAndCollectAsRetainedState(
+          initial = 0,
+          producer = {
+              flow {
+                  delay(1_000)
+                  emit(1)
+              }
+          }
+      )
+      val saveableValue by rememberSaveable {
+          mutableIntStateOf(Random.nextInt(1, 1000))
+      }
+
+    return TabScreenCircuit.State(label = "Saveable=$saveableValue\nValue=$value Label=${screen.label}") { event ->
       when (event) {
         TabScreenCircuit.Event.Next -> navigator.goTo(screen.next())
       }

@@ -23,6 +23,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,9 +47,18 @@ fun ContentScaffold(
   tabs: List<TabScreen>,
   modifier: Modifier = Modifier,
 ) {
-  Scaffold(
+  NestedScaffold(
     modifier = modifier.testTag(ContentTags.TAG_SCAFFOLD).fillMaxSize(),
-    bottomBar = { BottomTabRow(tabs, backStack, navigator) },
+    bottomBar = {
+        val isRootScreen by remember(backStack) {
+            derivedStateOf {
+                backStack.size == 1
+            }
+        }
+        if (isRootScreen) {
+            BottomTabRow(tabs, backStack, navigator)
+        }
+    },
   ) { innerPadding ->
     NavigableCircuitContent(
       navigator = navigator,
