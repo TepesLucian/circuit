@@ -20,6 +20,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -27,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.foundation.DelicateCircuitFoundationApi
 import com.slack.circuit.internal.runtime.Parcelize
+import com.slack.circuit.retained.produceAndCollectAsRetainedState
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -36,6 +40,9 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
+import kotlin.random.Random
 import kotlin.reflect.KClass
 
 @Parcelize
@@ -90,7 +97,20 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
   @Composable
   override fun present(): TabScreenCircuit.State {
     val navStack = navigator.peekNavStack()
-    return TabScreenCircuit.State(label = screen.label, navStack = navStack) { event ->
+      val value by produceAndCollectAsRetainedState(
+          initial = 0,
+          producer = {
+              flow {
+                  delay(1_000)
+                  emit(1)
+              }
+          }
+      )
+      val saveableValue by rememberSaveable {
+          mutableIntStateOf(Random.nextInt(1, 1000))
+      }
+
+    return TabScreenCircuit.State(label = "label=${screen.label}/retain=$value/saveable=$saveableValue", navStack = navStack) { event ->
       when (event) {
         is TabScreenCircuit.Event.Backward -> navigator.backward()
         is TabScreenCircuit.Event.Forward -> navigator.forward()
