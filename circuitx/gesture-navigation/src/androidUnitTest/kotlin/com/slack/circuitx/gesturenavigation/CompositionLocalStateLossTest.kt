@@ -19,7 +19,6 @@ import com.slack.circuit.internal.test.TestContentTags.TAG_GO_NEXT
 import com.slack.circuit.internal.test.TestContentTags.TAG_INCREASE_COUNT
 import com.slack.circuit.internal.test.TestContentTags.TAG_LABEL
 import com.slack.circuit.internal.test.TestScreen
-import com.slack.circuit.runtime.Navigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -77,8 +76,11 @@ class CompositionLocalStateLossTest {
             // do the same process again but increase the composition local on screen A
             println("Going to A but changing the composition local")
             onTopNavigationRecordNodeWithTag(TAG_GO_NEXT).performClick()
+            // increasing here fails the test - probably due to navigation animation running + recomposition of the composition local ?
             intValue += 1
             onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("A")
+            // increasing here AND commenting out previous increase passes the test
+            intValue += 1
             println("Going back to root")
             activity.onBackPressedDispatcher.onBackPressed()
             onTopNavigationRecordNodeWithTag(TAG_LABEL).assertTextEquals("Root Alpha")
